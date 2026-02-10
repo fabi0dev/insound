@@ -34,6 +34,7 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-progress-label: var(--progress-label);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -65,6 +66,7 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
+  --progress-label: oklch(0.5 0.15 145);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -91,38 +93,99 @@
 }
 
 .dark {
-  --background: oklch(0.13 0.01 265);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.65 0.22 293);
-  --primary-foreground: oklch(0.15 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.65 0.22 293);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.65 0.22 293);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Fundo muito escuro (#1a191c) */
+  --background: oklch(0.14 0.012 280);
+  --foreground: oklch(0.95 0 0);
+  /* Cards e barras: cinza-arroxeado (#363045 / #443B57) */
+  --card: oklch(0.22 0.035 290);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.22 0.035 290);
+  --popover-foreground: oklch(0.95 0 0);
+  /* Destaque: lavanda (barra de progresso, botão play, volume) */
+  --primary: oklch(0.78 0.11 290);
+  --primary-foreground: oklch(0.18 0.02 290);
+  /* Secundário: cinza-arroxeado para botões */
+  --secondary: oklch(0.28 0.045 290);
+  --secondary-foreground: oklch(0.95 0 0);
+  --muted: oklch(0.26 0.04 290);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.28 0.045 290);
+  --accent-foreground: oklch(0.95 0 0);
+  --destructive: oklch(0.65 0.2 25);
+  --border: oklch(0.35 0.04 290 / 60%);
+  --input: oklch(0.3 0.04 290);
+  --ring: oklch(0.78 0.11 290);
+  /* Badge do tempo no player: verde claro */
+  --progress-label: oklch(0.82 0.16 145);
+  --chart-1: oklch(0.78 0.11 290);
+  --chart-2: oklch(0.82 0.16 145);
+  --chart-3: oklch(0.65 0.2 25);
+  --chart-4: oklch(0.7 0.15 200);
+  --chart-5: oklch(0.72 0.18 50);
+  --sidebar: oklch(0.2 0.03 290);
+  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar-primary: oklch(0.78 0.11 290);
+  --sidebar-primary-foreground: oklch(0.18 0.02 290);
+  --sidebar-accent: oklch(0.28 0.045 290);
+  --sidebar-accent-foreground: oklch(0.95 0 0);
+  --sidebar-border: oklch(0.35 0.04 290 / 50%);
+  --sidebar-ring: oklch(0.78 0.11 290);
 }
+
+/* Animações globais */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.4s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+.stagger-1 { animation-delay: 30ms; }
+.stagger-2 { animation-delay: 60ms; }
+.stagger-3 { animation-delay: 90ms; }
+.stagger-4 { animation-delay: 120ms; }
+.stagger-5 { animation-delay: 150ms; }
+.stagger-6 { animation-delay: 180ms; }
+.stagger-7 { animation-delay: 210ms; }
+.stagger-8 { animation-delay: 240ms; }
+.stagger-9 { animation-delay: 270ms; }
+.stagger-10 { animation-delay: 300ms; }
 
 @layer base {
   * {

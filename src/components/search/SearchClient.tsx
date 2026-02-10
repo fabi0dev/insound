@@ -101,7 +101,7 @@ export function SearchClient() {
   return (
     <div className="space-y-4">
       <form
-        className="flex gap-2"
+        className="flex gap-2 transition-opacity duration-200"
         onSubmit={(e) => {
           e.preventDefault();
           void performSearch(query);
@@ -178,7 +178,7 @@ export function SearchClient() {
       )}
 
       {results && hasResults && (
-        <>
+        <div className="animate-fade-up space-y-6">
           {popularTracks.length > 0 && (
             <section className="space-y-1.5">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -189,7 +189,7 @@ export function SearchClient() {
                     {popularTracks.map((track) => (
                       <div
                         key={track.id}
-                        className="group flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-accent/50"
+                        className="group flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-200 hover:bg-accent/50"
                       >
                         <Button
                           type="button"
@@ -267,7 +267,7 @@ export function SearchClient() {
                         <img
                           src={album.cover_medium ?? album.cover_big ?? ""}
                           alt={album.title}
-                          className="size-full object-cover transition group-hover:scale-105"
+                          className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       </div>
                       <p className="truncate text-xs font-medium text-foreground">
@@ -424,7 +424,7 @@ export function SearchClient() {
                               "/avatar"
                             }
                             alt={artist.name}
-                            className="size-full object-cover transition group-hover:scale-105"
+                            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
                           />
                         </div>
                         <p className="truncate text-sm font-medium text-foreground">
@@ -476,7 +476,7 @@ export function SearchClient() {
                               album.cover_medium ?? album.cover_big ?? "/album"
                             }
                             alt={album.title}
-                            className="size-full object-cover transition group-hover:scale-105"
+                            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
                           />
                         </div>
                         <p className="truncate text-sm font-medium text-foreground">
@@ -530,7 +530,7 @@ export function SearchClient() {
                             "/playlist"
                           }
                           alt={playlist.title}
-                          className="size-full object-cover transition group-hover:scale-105"
+                          className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       </div>
                       <p className="truncate text-sm font-medium text-foreground">
@@ -547,7 +547,7 @@ export function SearchClient() {
               )}
             </CardContent>
           </Card>
-        </>
+        </div>
       )}
     </div>
   );

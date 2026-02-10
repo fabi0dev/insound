@@ -4,7 +4,6 @@ import "./globals.css";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import { HistoryProvider } from "@/contexts/HistoryContext";
 import { PlayerProvider } from "@/components/player/PlayerContext";
-import { PlayerBar } from "@/components/player/PlayerBar";
 import { AppShell } from "@/components/layout/AppShell";
 
 const geistSans = Geist({
@@ -37,7 +36,6 @@ export default function RootLayout({
           <HistoryProvider>
             <PlayerProvider>
               <AppShell>{children}</AppShell>
-              <PlayerBar />
             </PlayerProvider>
           </HistoryProvider>
         </FavoritesProvider>

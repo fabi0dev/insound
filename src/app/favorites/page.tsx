@@ -23,7 +23,7 @@ function favoriteTrackToDeezerTrack(t: {
   };
 }
 
-export default function FavoritosPage() {
+export default function FavoritesPage() {
   const { tracks, albums, artists, toggleTrack, toggleAlbum, toggleArtist } = useFavorites();
   const { play, addToQueue } = usePlayer();
 
@@ -210,4 +210,3 @@ export default function FavoritosPage() {
     </div>
   );
 }
-

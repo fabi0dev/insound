@@ -74,7 +74,7 @@ export default function ArtistPage() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="animate-fade-up mx-auto max-w-4xl space-y-6">
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-50"

@@ -4,7 +4,7 @@ import { Play, Plus, Trash } from "@phosphor-icons/react";
 import { useHistory } from "@/contexts/HistoryContext";
 import { usePlayer } from "@/components/player/PlayerContext";
 
-export default function HistoricoPage() {
+export default function HistoryPage() {
   const { history, clearHistory } = useHistory();
   const { play, addToQueue } = usePlayer();
 

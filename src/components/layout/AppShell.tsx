@@ -8,13 +8,41 @@ import {
   ClockCounterClockwise,
   MusicNotesPlus,
 } from "@phosphor-icons/react";
+import { PlayerBar } from "@/components/player/PlayerBar";
 import { cn } from "@/lib/utils";
+
+function NavLink({
+  href,
+  label,
+  icon: Icon,
+  active,
+}: {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string; weight: "fill" | "regular" }>;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "flex items-center gap-2 rounded-lg px-3 py-2 transition-all duration-200 ease-out",
+        active
+          ? "bg-accent text-primary"
+          : "text-muted-foreground hover:bg-accent/60 hover:text-foreground hover:translate-x-0.5",
+      )}
+    >
+      <Icon className="size-4 transition-transform duration-200" weight={active ? "fill" : "regular"} />
+      <span>{label}</span>
+    </Link>
+  );
+}
 
 const mainNav = [{ href: "/", label: "Início", icon: House }];
 
 const libraryNav = [
-  { href: "/favoritos", label: "Favoritos", icon: Heart },
-  { href: "/historico", label: "Histórico", icon: ClockCounterClockwise },
+  { href: "/favorites", label: "Favoritos", icon: Heart },
+  { href: "/history", label: "Histórico", icon: ClockCounterClockwise },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -22,7 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="hidden w-64 flex-col border-r border-border bg-card/50 px-5 py-6 md:flex">
+      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-border bg-card/50 px-5 py-6 md:flex">
         <div className="mb-6 flex items-center gap-2">
           <div className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <MusicNotesPlus weight="fill" className="size-5" />
@@ -31,54 +59,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="text-sm font-semibold tracking-tight">
               Insound
             </span>
-            <span className="text-[11px] text-muted-foreground">
-              Preview de 30 segundos
-            </span>
           </div>
         </div>
 
         <nav className="space-y-1 text-sm">
-          {mainNav.map((item) => {
-            const active = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-2 rounded-lg px-3 py-2 transition-colors",
-                  active
-                    ? "bg-accent text-primary"
-                    : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
-                )}
-              >
-                <Icon className="size-4" weight={active ? "fill" : "regular"} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          {mainNav.map((item) => (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              active={pathname === item.href}
+            />
+          ))}
           <p className="mt-4 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Sua biblioteca
           </p>
-          {libraryNav.map((item) => {
-            const active = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-2 rounded-lg px-3 py-2 transition-colors",
-                  active
-                    ? "bg-accent text-primary"
-                    : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
-                )}
-              >
-                <Icon className="size-4" weight={active ? "fill" : "regular"} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          {libraryNav.map((item) => (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              active={pathname === item.href}
+            />
+          ))}
         </nav>
 
         <div className="mt-auto rounded-xl border border-primary/30 bg-primary/10 p-3 text-[11px] text-muted-foreground">
@@ -88,28 +93,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </p>
         </div>
       </aside>
-
-      <main className="relative flex min-h-screen flex-1 flex-col">
-        <header className="sticky top-0 z-20 border-b border-border bg-card/60 px-4 py-2.5 backdrop-blur-md md:px-8">
-          <div className="flex items-center gap-2 md:min-h-9">
-            <div className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground md:hidden">
-              <MusicNotesPlus weight="fill" className="size-5" />
-            </div>
-            <div className="hidden flex-col leading-tight md:flex">
-              <span className="text-sm font-semibold tracking-tight">
-                Insound
-              </span>
-              <span className="text-[11px] text-muted-foreground">
-                Preview 30s
-              </span>
-            </div>
+      <div className="flex min-h-screen flex-1 flex-col md:pl-64">
+        <main className="relative flex flex-1 flex-col">
+          <div
+            key={pathname}
+            className="animate-fade-up relative flex-1 px-4 pb-36 pt-4 md:px-8 md:pb-40"
+          >
+            {children}
           </div>
-        </header>
-
-        <div className="relative flex-1 px-4 pb-24 pt-4 md:px-8 md:pb-28">
-          {children}
-        </div>
-      </main>
+        </main>
+        <PlayerBar />
+      </div>
     </div>
   );
 }

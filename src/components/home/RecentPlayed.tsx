@@ -16,13 +16,13 @@ export function RecentPlayed() {
   const recent = history.slice(0, MAX_RECENT);
 
   return (
-    <Card className="flex flex-col border-border bg-card/30 backdrop-blur-sm">
+    <Card className="animate-fade-up flex flex-col border-border bg-card/30 backdrop-blur-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-2">
         <h2 className="text-xs font-semibold text-foreground">
           Tocadas recentemente
         </h2>
         <Link
-          href="/historico"
+          href="/history"
           className="text-[11px] text-primary hover:text-primary/90"
         >
           Ver tudo
@@ -38,7 +38,7 @@ export function RecentPlayed() {
             recent.map((track, i) => (
               <li
                 key={`${track.id}-${i}`}
-                className="group flex items-center gap-2 rounded-md px-2 py-1 hover:bg-accent/50"
+                className="group flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-200 hover:bg-accent/50"
               >
                 <Button
                   type="button"
@@ -47,8 +47,8 @@ export function RecentPlayed() {
                   onClick={() => play(track)}
                   disabled={!track.preview}
                   className={cn(
-                    "size-7 shrink-0 rounded-full opacity-0 transition group-hover:opacity-100 disabled:opacity-50",
-                    "group-hover:bg-primary group-hover:text-primary-foreground"
+                    "size-7 shrink-0 rounded-full opacity-0 transition-all duration-200 group-hover:opacity-100 disabled:opacity-50",
+                    "group-hover:bg-primary group-hover:text-primary-foreground",
                   )}
                 >
                   <Play weight="fill" className="size-3.5" />
@@ -65,12 +65,6 @@ export function RecentPlayed() {
             ))
           )}
         </ul>
-        <div className="mt-3 flex items-center justify-between gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-2.5 py-2 text-[11px]">
-          <span className="text-muted-foreground">Ouvir offline</span>
-          <Button variant="ghost" size="sm" className="h-6 text-xs" disabled>
-            Em breve
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );

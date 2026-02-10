@@ -46,7 +46,7 @@ export function TrackRow({
   };
 
   return (
-    <div className="group flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-accent/50">
+    <div className="group flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors duration-200 hover:bg-accent/50">
       <div className="flex w-8 shrink-0 items-center justify-center">
         {showIndex ? (
           <span className="text-xs text-muted-foreground group-hover:hidden">
@@ -60,7 +60,7 @@ export function TrackRow({
           onClick={handlePlay}
           disabled={!track.preview}
           className={cn(
-            "hidden size-8 rounded-full disabled:opacity-50 group-hover:flex",
+            "hidden size-8 rounded-full transition-transform duration-200 disabled:opacity-50 group-hover:flex hover:scale-105",
             isCurrent && isPlaying
               ? "flex bg-primary text-primary-foreground"
               : "bg-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
