@@ -85,7 +85,6 @@ export default function ArtistPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-end">
         <div className="aspect-square w-full max-w-[240px] shrink-0 overflow-hidden rounded-full bg-zinc-800 shadow-2xl">
           {cover ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={cover}
               alt={artist.name}

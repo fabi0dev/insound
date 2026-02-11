@@ -48,9 +48,7 @@ function loadVolume(): number {
       const n = Number(v);
       if (n >= 0 && n <= 1) return n;
     }
-  } catch {
-    // ignore
-  }
+  } catch {}
   return 1;
 }
 
@@ -122,9 +120,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             });
           }
         }
-      } catch {
-        // ignore
-      }
+      } catch {}
 
       audio.onended = () => {
         setState((prev) => {
@@ -283,7 +279,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => ({ ...prev, progress: audio.currentTime }));
   }, []);
 
-  // Integração com Media Session API para usar controles do SO / navegador
   const nextRef = useRef(next);
   const previousRef = useRef(previous);
   const toggleRef = useRef(toggle);
@@ -305,8 +300,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mediaSession = (navigator as any).mediaSession as MediaSession;
+    const mediaSession = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
 
     mediaSession.setActionHandler("nexttrack", () => {
       nextRef.current();

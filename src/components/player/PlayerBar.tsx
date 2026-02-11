@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, useCallback, useEffect } from "react";
 import {
   SkipBack,
@@ -14,7 +15,12 @@ import {
 import { usePlayer } from "./PlayerContext";
 import { useImageColors } from "@/hooks/useImageColors";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +34,7 @@ function formatTime(seconds: number) {
 function positionToTime(
   clientX: number,
   rect: DOMRect,
-  durationSec: number
+  durationSec: number,
 ): number {
   const x = (clientX - rect.left) / rect.width;
   return Math.max(0, Math.min(durationSec, x * durationSec));
@@ -70,7 +76,7 @@ export function PlayerBar() {
       const rect = seekBarRef.current.getBoundingClientRect();
       seek(positionToTime(clientX, rect, durationSec));
     },
-    [seek, durationSec]
+    [seek, durationSec],
   );
 
   const handleSeekClick = useCallback(
@@ -78,7 +84,7 @@ export function PlayerBar() {
       if (isDragging) return;
       updateSeek(e.clientX);
     },
-    [isDragging, updateSeek]
+    [isDragging, updateSeek],
   );
 
   const handlePointerDown = useCallback(
@@ -88,7 +94,7 @@ export function PlayerBar() {
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
       updateSeek(clientX);
     },
-    [updateSeek]
+    [updateSeek],
   );
 
   useEffect(() => {
@@ -124,8 +130,7 @@ export function PlayerBar() {
           ["--player-accent" as string]: colors.primary,
         }}
       >
-        <div className="flex flex-col gap-3 md:gap-4">
-          {/* Barra de progresso com thumb arrastável */}
+        <div className="flex flex-col gap-2 md:gap-3">
           <div className="flex items-center gap-2">
             <div
               ref={seekBarRef}
@@ -141,26 +146,29 @@ export function PlayerBar() {
               onTouchStart={handlePointerDown}
               onKeyDown={(e) => {
                 if (e.key === "ArrowLeft") seek(Math.max(0, progress - 5));
-                if (e.key === "ArrowRight") seek(Math.min(durationSec, progress + 5));
+                if (e.key === "ArrowRight")
+                  seek(Math.min(durationSec, progress + 5));
               }}
             >
               <div className="relative h-2 w-full rounded-full bg-white/15">
-                {/* Faixa preenchida */}
                 <div
                   className={cn(
                     "absolute inset-y-0 left-0 rounded-full",
-                    isDragging ? "transition-none" : "transition-[width] duration-150 ease-linear"
+                    isDragging
+                      ? "transition-none"
+                      : "transition-[width] duration-150 ease-linear",
                   )}
                   style={{
                     width: `${percent}%`,
                     backgroundColor: colors.primary,
                   }}
                 />
-                {/* Thumb (bolinha) arrastável */}
                 <span
                   className={cn(
                     "absolute top-1/2 size-4 -translate-y-1/2 rounded-full border-2 border-white shadow-lg",
-                    isDragging ? "scale-125 transition-none" : "transition-[left,transform] duration-150 ease-linear hover:scale-110"
+                    isDragging
+                      ? "scale-125 transition-none"
+                      : "transition-[left,transform] duration-150 ease-linear hover:scale-110",
                   )}
                   style={{
                     left: `calc(${percent}% - 8px)`,
@@ -182,12 +190,10 @@ export function PlayerBar() {
             </span>
           </div>
 
-          <div className="flex items-center justify-between gap-4">
-            {/* Esquerda: capa + título */}
-            <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="flex items-center justify-between gap-3 md:gap-4">
+            <div className="flex min-w-0 flex-1 items-center gap-2.5 md:gap-3">
               {cover ? (
                 <div className="relative size-12 shrink-0 overflow-hidden rounded-xl shadow-lg ring-1 ring-white/10 transition-transform duration-300 hover:scale-105 md:size-14">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={cover}
                     alt={current.title}
@@ -207,13 +213,18 @@ export function PlayerBar() {
                   {current.title}
                 </p>
                 <p className="truncate text-[11px] text-white/60">
-                  {current.artist?.name}
+                  {current.artist && (
+                    <Link
+                      href={`/artist/${current.artist.id}`}
+                      className="hover:text-primary underline-offset-2 hover:underline"
+                    >
+                      {current.artist.name}
+                    </Link>
+                  )}
                 </p>
               </div>
             </div>
-
-            {/* Centro: controles */}
-            <div className="flex shrink-0 items-center gap-1 md:gap-2">
+            <div className="flex shrink-0 items-center gap-1.5 md:gap-2">
               <Button
                 type="button"
                 variant="ghost"
@@ -229,11 +240,7 @@ export function PlayerBar() {
                 type="button"
                 size="icon"
                 onClick={toggle}
-                className="animate-in duration-200 size-11 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 md:size-12"
-                style={{
-                  backgroundColor: colors.primary,
-                  color: "#0f0f0f",
-                }}
+                className="duration-200 size-11 rounded-full shadow-lg ring-2  bg-primary text-primary-foreground transition-all hover:scale-105 hover:shadow-xl active:scale-95 md:size-12"
                 aria-label={isPlaying ? "Pausar" : "Reproduzir"}
               >
                 {isPlaying ? (
@@ -264,8 +271,6 @@ export function PlayerBar() {
                 <Stop className="size-4" weight="fill" />
               </Button>
             </div>
-
-            {/* Direita: fila + volume */}
             <div className="flex min-w-0 flex-1 justify-end items-center gap-2 md:gap-3">
               <Button
                 type="button"
@@ -274,7 +279,7 @@ export function PlayerBar() {
                 onClick={() => setShowQueue((s) => !s)}
                 className={cn(
                   "size-9 text-white/80 transition-all duration-200 hover:scale-105 hover:text-white",
-                  showQueue && "bg-white/15 text-white"
+                  showQueue && "bg-white/15 text-white",
                 )}
                 aria-label="Fila de reprodução"
                 title="Fila"
@@ -282,7 +287,10 @@ export function PlayerBar() {
                 <Queue className="size-5" weight="bold" />
               </Button>
               <div className="flex items-center gap-2">
-                <SpeakerHigh className="size-4 shrink-0 text-white/60" weight="fill" />
+                <SpeakerHigh
+                  className="size-4 shrink-0 text-white/60"
+                  weight="fill"
+                />
                 <Slider
                   min={0}
                   max={1}
@@ -340,7 +348,9 @@ export function PlayerBar() {
                     )}
                   </Button>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-foreground">{track.title}</p>
+                    <p className="truncate text-sm text-foreground">
+                      {track.title}
+                    </p>
                     <p className="truncate text-[11px] text-muted-foreground">
                       {track.artist?.name}
                     </p>

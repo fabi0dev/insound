@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Play, Plus, Heart } from "@phosphor-icons/react";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { usePlayer } from "@/components/player/PlayerContext";
+import { cn } from "@/lib/utils";
 import type { DeezerTrack } from "@/lib/deezer";
 
 function favoriteTrackToDeezerTrack(t: {
@@ -25,7 +26,7 @@ function favoriteTrackToDeezerTrack(t: {
 
 export default function FavoritesPage() {
   const { tracks, albums, artists, toggleTrack, toggleAlbum, toggleArtist } = useFavorites();
-  const { play, addToQueue } = usePlayer();
+  const { play, addToQueue, current } = usePlayer();
 
   const hasAny = tracks.length > 0 || albums.length > 0 || artists.length > 0;
 
@@ -63,10 +64,14 @@ export default function FavoritesPage() {
           <ul className="space-y-1 rounded-xl border border-white/10 bg-black/40 p-2">
             {tracks.map((t) => {
               const track = favoriteTrackToDeezerTrack(t);
+              const isCurrent = current?.id === track.id;
               return (
                 <li
                   key={t.id}
-                  className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-zinc-900/70"
+                  className={cn(
+                    "flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-zinc-900/70",
+                    isCurrent && "bg-primary/10"
+                  )}
                 >
                   <button
                     type="button"
@@ -97,7 +102,14 @@ export default function FavoritesPage() {
                     <Heart className="h-4 w-4" weight="fill" />
                   </button>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-zinc-50">{t.title}</p>
+                    <p
+                      className={cn(
+                        "truncate text-sm text-zinc-50",
+                        isCurrent && "text-primary"
+                      )}
+                    >
+                      {t.title}
+                    </p>
                     <p className="truncate text-[11px] text-zinc-400">{t.artistName}</p>
                   </div>
                 </li>
@@ -121,7 +133,6 @@ export default function FavoritesPage() {
                 >
                   <div className="mb-2 aspect-square w-full overflow-hidden rounded-lg bg-zinc-800">
                     {a.cover ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={a.cover}
                         alt={a.title}
@@ -172,7 +183,6 @@ export default function FavoritesPage() {
                 >
                   <div className="mb-2 aspect-square w-full overflow-hidden rounded-full bg-zinc-800">
                     {a.picture ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={a.picture}
                         alt={a.name}

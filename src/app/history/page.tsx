@@ -1,12 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { Play, Plus, Trash } from "@phosphor-icons/react";
 import { useHistory } from "@/contexts/HistoryContext";
 import { usePlayer } from "@/components/player/PlayerContext";
+import { cn } from "@/lib/utils";
 
 export default function HistoryPage() {
   const { history, clearHistory } = useHistory();
-  const { play, addToQueue } = usePlayer();
+  const { play, addToQueue, current } = usePlayer();
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
@@ -42,10 +44,15 @@ export default function HistoryPage() {
 
       {history.length > 0 && (
         <ul className="space-y-1 rounded-xl border border-white/10 bg-black/40 p-2">
-          {history.map((track, index) => (
+          {history.map((track, index) => {
+            const isCurrent = current?.id === track.id;
+            return (
             <li
               key={`${track.id}-${index}`}
-              className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-zinc-900/70"
+              className={cn(
+                "flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-zinc-900/70",
+                isCurrent && "bg-primary/10"
+              )}
             >
               <button
                 type="button"
@@ -65,9 +72,32 @@ export default function HistoryPage() {
                 <Plus className="h-4 w-4" />
               </button>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm text-zinc-50">{track.title}</p>
+                <p
+                  className={cn(
+                    "truncate text-sm text-zinc-50",
+                    isCurrent && "text-primary"
+                  )}
+                >
+                  {track.title}
+                </p>
                 <p className="truncate text-[11px] text-zinc-400">
-                  {track.artist?.name} · {track.album?.title}
+                  {track.artist && (
+                    <Link
+                      href={`/artist/${track.artist.id}`}
+                      className="hover:text-primary underline-offset-2 hover:underline"
+                    >
+                      {track.artist.name}
+                    </Link>
+                  )}
+                  {track.artist && track.album && " · "}
+                  {track.album && (
+                    <Link
+                      href={`/album/${track.album.id}`}
+                      className="hover:text-primary underline-offset-2 hover:underline"
+                    >
+                      {track.album.title}
+                    </Link>
+                  )}
                 </p>
               </div>
               <span className="text-[11px] text-zinc-500">
@@ -75,7 +105,8 @@ export default function HistoryPage() {
                 {(track.duration % 60).toString().padStart(2, "0")}
               </span>
             </li>
-          ))}
+          );
+          })}
         </ul>
       )}
     </div>

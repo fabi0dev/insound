@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 
 const SAMPLE_SIZE = 40;
-const FALLBACK_PRIMARY = "#a78bfa";
-const FALLBACK_SECONDARY = "#7c3aed";
+const FALLBACK_PRIMARY = "#22ff88";
+const FALLBACK_SECONDARY = "#11bb66";
 
 function rgbToHex(r: number, g: number, b: number): string {
   return (
@@ -15,7 +15,6 @@ function rgbToHex(r: number, g: number, b: number): string {
   );
 }
 
-/** Escurece uma cor hex para uso como fundo legível */
 function darkenHex(hex: string, factor: number): string {
   const n = parseInt(hex.slice(1), 16);
   const r = ((n >> 16) & 0xff) * factor;
@@ -37,7 +36,6 @@ export function useImageColors(imageUrl: string | undefined): ImageColors {
 
   useEffect(() => {
     if (!imageUrl) {
-      setColors({ primary: FALLBACK_PRIMARY, secondary: FALLBACK_SECONDARY });
       return;
     }
 
@@ -111,11 +109,11 @@ export function useImageColors(imageUrl: string | undefined): ImageColors {
     };
 
     img.onerror = () => {
-      if (!cancelled)
-        setColors({
-          primary: FALLBACK_PRIMARY,
-          secondary: FALLBACK_SECONDARY,
-        });
+      if (cancelled) return;
+      setColors({
+        primary: FALLBACK_PRIMARY,
+        secondary: FALLBACK_SECONDARY,
+      });
     };
 
     img.src = imageUrl;

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { DeezerTrack } from "@/lib/deezer";
 
 const STORAGE_KEY = "insound-history";
@@ -32,11 +32,7 @@ type HistoryContextValue = {
 const HistoryContext = createContext<HistoryContextValue | undefined>(undefined);
 
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
-  const [history, setHistory] = useState<DeezerTrack[]>([]);
-
-  useEffect(() => {
-    setHistory(load());
-  }, []);
+  const [history, setHistory] = useState<DeezerTrack[]>(() => load());
 
   const addToHistory = useCallback((track: DeezerTrack) => {
     setHistory((prev) => {

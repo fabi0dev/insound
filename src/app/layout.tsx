@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Insound – Streaming de Música",
+  title: "InSound",
   description:
     "Descubra músicas, artistas, álbuns e playlists com previews de 30 segundos usando a Deezer API.",
 };

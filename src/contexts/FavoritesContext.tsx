@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { DeezerAlbum, DeezerArtist, DeezerTrack } from "@/lib/deezer";
 
 const STORAGE_KEY = "insound-favorites";
@@ -94,11 +94,7 @@ type FavoritesContextValue = FavoritesData & {
 const FavoritesContext = createContext<FavoritesContextValue | undefined>(undefined);
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<FavoritesData>(defaultData);
-
-  useEffect(() => {
-    setData(load());
-  }, []);
+  const [data, setData] = useState<FavoritesData>(() => load());
 
   const persist = useCallback((next: FavoritesData) => {
     setData(next);

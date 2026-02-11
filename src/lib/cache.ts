@@ -1,4 +1,4 @@
-const TTL_MS = 5 * 60 * 1000; // 5 minutos
+const TTL_MS = 5 * 60 * 1000;
 
 type Entry<T> = { data: T; expires: number };
 

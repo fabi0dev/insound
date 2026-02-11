@@ -12,7 +12,7 @@ const MAX_RECENT = 5;
 
 export function RecentPlayed() {
   const { history } = useHistory();
-  const { play } = usePlayer();
+  const { play, current } = usePlayer();
   const recent = history.slice(0, MAX_RECENT);
 
   return (
@@ -35,34 +35,70 @@ export function RecentPlayed() {
               Nenhuma música ainda.
             </li>
           ) : (
-            recent.map((track, i) => (
-              <li
-                key={`${track.id}-${i}`}
-                className="group flex items-center gap-2 rounded-md px-2 py-1 transition-colors duration-200 hover:bg-accent/50"
-              >
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => play(track)}
-                  disabled={!track.preview}
+            recent.map((track, i) => {
+              const cover =
+                track.album?.cover_medium ?? track.album?.cover_big;
+              const isCurrent = current?.id === track.id;
+
+              return (
+                <li
+                  key={`${track.id}-${i}`}
                   className={cn(
-                    "size-7 shrink-0 rounded-full opacity-0 transition-all duration-200 group-hover:opacity-100 disabled:opacity-50",
-                    "group-hover:bg-primary group-hover:text-primary-foreground",
+                    "group flex items-center gap-2 rounded-md px-2 py-1 cursor-pointer transition-colors duration-200 hover:bg-primary/10",
+                    isCurrent && "bg-primary/10"
                   )}
                 >
-                  <Play weight="fill" className="size-3.5" />
-                </Button>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[11px] font-medium text-foreground">
-                    {track.title}
-                  </p>
-                  <p className="truncate text-[10px] text-muted-foreground">
-                    {track.artist?.name}
-                  </p>
-                </div>
-              </li>
-            ))
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => play(track)}
+                    disabled={!track.preview}
+                    className={cn(
+                      "size-7 shrink-0 rounded-full opacity-0 transition-all duration-200 group-hover:opacity-100 disabled:opacity-50",
+                      "group-hover:bg-primary group-hover:text-primary-foreground",
+                      isCurrent && "opacity-100 bg-primary text-primary-foreground"
+                    )}
+                    aria-label="Reproduzir novamente"
+                  >
+                    <Play weight="fill" className="size-3.5" />
+                  </Button>
+                  {cover ? (
+                    <div className="size-8 shrink-0 overflow-hidden rounded-md">
+                      <img
+                        src={cover}
+                        alt={track.title}
+                        className="size-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                      <Play weight="fill" className="size-3" />
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={cn(
+                        "truncate text-[11px] font-medium text-foreground group-hover:text-primary",
+                        isCurrent && "text-primary"
+                      )}
+                    >
+                      {track.title}
+                    </p>
+                    <p className="truncate text-[10px] text-muted-foreground">
+                      {track.artist && (
+                        <Link
+                          href={`/artist/${track.artist.id}`}
+                          className="hover:text-primary underline-offset-2 hover:underline"
+                        >
+                          {track.artist.name}
+                        </Link>
+                      )}
+                    </p>
+                  </div>
+                </li>
+              );
+            })
           )}
         </ul>
       </CardContent>

@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 const HYPE_TAGS = ["Energize", "Relaxar", "Treino", "Foco"] as const;
 
@@ -34,7 +35,7 @@ export function SearchClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasUserSearched, setHasUserSearched] = useState(false);
-  const { play, addToQueue, setQueue } = usePlayer();
+  const { play, addToQueue, setQueue, current } = usePlayer();
   const {
     isFavoriteTrack,
     isFavoriteAlbum,
@@ -65,7 +66,7 @@ export function SearchClient() {
     }
   }
 
-  async function loadHype() {
+  const loadHype = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -77,19 +78,18 @@ export function SearchClient() {
       setResults(json);
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : "Não foi possível carregar destaques."
+        e instanceof Error ? e.message : "Não foi possível carregar destaques.",
       );
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     if (!hasUserSearched && !results) {
       void loadHype();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasUserSearched]);
+  }, [hasUserSearched, results, loadHype]);
 
   const hasResults =
     !!results && Object.values(results).some((list) => list.length > 0);
@@ -143,28 +143,6 @@ export function SearchClient() {
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
-          <TabsList className="h-8 rounded-full border border-border bg-card/40 p-0.5 text-xs">
-            <TabsTrigger value="tracks" className="rounded-full px-3 py-1.5">
-              Músicas
-            </TabsTrigger>
-            <TabsTrigger value="artists" className="rounded-full px-3 py-1.5">
-              Artistas
-            </TabsTrigger>
-            <TabsTrigger value="albums" className="rounded-full px-3 py-1.5">
-              Álbuns
-            </TabsTrigger>
-            <TabsTrigger value="playlists" className="rounded-full px-3 py-1.5">
-              Playlists
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        {loading && (
-          <span className="text-xs text-muted-foreground">Buscando…</span>
-        )}
-      </div>
-
       {error && (
         <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
           {error}
@@ -186,10 +164,17 @@ export function SearchClient() {
               </h2>
               <div className="rounded-lg border border-border bg-card/40 p-1.5">
                 <div className="grid gap-0.5 sm:grid-cols-2">
-                    {popularTracks.map((track) => (
+                    {popularTracks.map((track) => {
+                      const isCurrent = current?.id === track.id;
+                      const cover =
+                        track.album?.cover_medium ?? track.album?.cover_big;
+                      return (
                       <div
                         key={track.id}
-                        className="group flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-200 hover:bg-accent/50"
+                        className={cn(
+                          "group flex items-center gap-3 rounded-lg px-2 py-1.5 cursor-pointer transition-colors duration-200 hover:bg-primary/10",
+                          isCurrent && "bg-primary/10"
+                        )}
                       >
                         <Button
                           type="button"
@@ -200,6 +185,19 @@ export function SearchClient() {
                         >
                           <Play weight="fill" className="size-4" />
                         </Button>
+                        {cover ? (
+                      <div className="size-10 shrink-0 overflow-hidden rounded-md">
+                        <img
+                          src={cover}
+                          alt={track.title}
+                          className="size-full object-cover"
+                        />
+                      </div>
+                        ) : (
+                          <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                            <Play weight="fill" className="size-4" />
+                          </div>
+                        )}
                         <Button
                           type="button"
                           variant="ghost"
@@ -233,15 +231,26 @@ export function SearchClient() {
                           />
                         </Button>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm text-foreground">
+                          <p
+                            className={cn(
+                              "truncate text-sm text-foreground group-hover:text-primary",
+                              isCurrent && "text-primary"
+                            )}
+                          >
                             {track.title}
                           </p>
                           <p className="truncate text-[11px] text-muted-foreground">
-                            {track.artist.name}
+                            <Link
+                              href={`/artist/${track.artist.id}`}
+                              className="hover:text-primary underline-offset-2 hover:underline"
+                            >
+                              {track.artist.name}
+                            </Link>
                           </p>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                 </div>
               </div>
             </section>
@@ -263,7 +272,6 @@ export function SearchClient() {
                       className="rounded-xl bg-card/60 p-2 hover:bg-accent/30"
                     >
                       <div className="mb-2 aspect-square w-36 overflow-hidden rounded-lg bg-muted">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={album.cover_medium ?? album.cover_big ?? ""}
                           alt={album.title}
@@ -316,7 +324,6 @@ export function SearchClient() {
                     className="flex w-40 shrink-0 flex-col rounded-xl bg-card/60 p-2 hover:bg-accent/30"
                   >
                     <div className="mb-2 aspect-square w-full overflow-hidden rounded-lg bg-muted">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={
                           playlist.picture_medium ?? playlist.picture_big ?? ""
@@ -339,14 +346,43 @@ export function SearchClient() {
             </section>
           )}
 
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
+              <TabsList className="h-8 rounded-full border border-border bg-card/40 p-0.5 text-xs">
+                <TabsTrigger value="tracks" className="rounded-full px-3 py-1.5">
+                  Músicas
+                </TabsTrigger>
+                <TabsTrigger value="artists" className="rounded-full px-3 py-1.5">
+                  Artistas
+                </TabsTrigger>
+                <TabsTrigger value="albums" className="rounded-full px-3 py-1.5">
+                  Álbuns
+                </TabsTrigger>
+                <TabsTrigger value="playlists" className="rounded-full px-3 py-1.5">
+                  Playlists
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            {loading && (
+              <span className="text-xs text-muted-foreground">Buscando…</span>
+            )}
+          </div>
+
           <Card className="border-border bg-card/40 p-3 md:p-4">
             <CardContent className="p-0">
               {tab === "tracks" && (
                 <div className="space-y-1">
-                  {results.tracks.map((track, i) => (
+              {results.tracks.map((track, i) => {
+                const cover =
+                  track.album?.cover_medium ?? track.album?.cover_big;
+                const isCurrent = current?.id === track.id;
+                return (
                     <div
                       key={track.id}
-                      className="group flex w-full items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-accent/50"
+                      className={cn(
+                        "group flex w-full items-center gap-3 rounded-lg px-2 py-1.5 cursor-pointer transition-colors duration-200 hover:bg-primary/10",
+                        isCurrent && "bg-primary/10"
+                      )}
                     >
                       <Button
                         type="button"
@@ -362,6 +398,19 @@ export function SearchClient() {
                       >
                         <Play weight="fill" className="size-4" />
                       </Button>
+                      {cover ? (
+                        <div className="size-10 shrink-0 overflow-hidden rounded-md">
+                          <img
+                            src={cover}
+                            alt={track.title}
+                            className="size-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                          <Play weight="fill" className="size-4" />
+                        </div>
+                      )}
                       <Button
                         type="button"
                         variant="ghost"
@@ -391,11 +440,28 @@ export function SearchClient() {
                         />
                       </Button>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm text-foreground">
+                        <p
+                          className={cn(
+                            "truncate text-sm text-foreground group-hover:text-primary",
+                            isCurrent && "text-primary",
+                          )}
+                        >
                           {track.title}
                         </p>
                         <p className="truncate text-xs text-muted-foreground">
-                          {track.artist.name} · {track.album.title}
+                          <Link
+                            href={`/artist/${track.artist.id}`}
+                            className="hover:text-primary underline-offset-2 hover:underline"
+                          >
+                            {track.artist.name}
+                          </Link>
+                          {" · "}
+                          <Link
+                            href={`/album/${track.album.id}`}
+                            className="hover:text-primary underline-offset-2 hover:underline"
+                          >
+                            {track.album.title}
+                          </Link>
                         </p>
                       </div>
                       <span className="text-[11px] text-muted-foreground">
@@ -403,7 +469,8 @@ export function SearchClient() {
                         {(track.duration % 60).toString().padStart(2, "0")}
                       </span>
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
               )}
 
@@ -416,7 +483,6 @@ export function SearchClient() {
                         className="block rounded-xl bg-card/60 p-3 hover:bg-accent/30"
                       >
                         <div className="mb-3 aspect-square w-full overflow-hidden rounded-full bg-muted">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={
                               artist.picture_medium ??
@@ -470,7 +536,6 @@ export function SearchClient() {
                         className="block rounded-xl bg-card/60 p-3 hover:bg-accent/30"
                       >
                         <div className="mb-3 aspect-square w-full overflow-hidden rounded-lg bg-muted">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={
                               album.cover_medium ?? album.cover_big ?? "/album"
@@ -522,7 +587,6 @@ export function SearchClient() {
                       className="group rounded-xl bg-card/60 p-3 hover:bg-accent/30"
                     >
                       <div className="mb-3 aspect-square w-full overflow-hidden rounded-lg bg-muted">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={
                             playlist.picture_medium ??

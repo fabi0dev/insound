@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Play, Plus, Heart } from "@phosphor-icons/react";
 import type { DeezerTrack } from "@/lib/deezer";
 import { usePlayer } from "@/components/player/PlayerContext";
@@ -46,7 +47,7 @@ export function TrackRow({
   };
 
   return (
-    <div className="group flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors duration-200 hover:bg-accent/50">
+    <div className="group flex items-center gap-3 rounded-lg px-2 py-1.5 cursor-pointer transition-colors duration-200 hover:bg-primary/10">
       <div className="flex w-8 shrink-0 items-center justify-center">
         {showIndex ? (
           <span className="text-xs text-muted-foreground group-hover:hidden">
@@ -71,7 +72,6 @@ export function TrackRow({
       </div>
       {cover ? (
         <div className="size-10 shrink-0 overflow-hidden rounded-md">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={cover}
             alt=""
@@ -86,14 +86,21 @@ export function TrackRow({
       <div className="min-w-0 flex-1">
         <p
           className={cn(
-            "truncate text-sm",
-            isCurrent ? "font-medium text-primary" : "text-foreground"
+            "truncate text-sm group-hover:text-primary",
+            isCurrent ? "font-medium text-primary" : "text-foreground",
           )}
         >
           {track.title}
         </p>
         <p className="truncate text-xs text-muted-foreground">
-          {track.artist?.name}
+          {track.artist && (
+            <Link
+              href={`/artist/${track.artist.id}`}
+              className="hover:text-primary underline-offset-2 hover:underline"
+            >
+              {track.artist.name}
+            </Link>
+          )}
         </p>
       </div>
       <span className="w-10 shrink-0 text-right text-[11px] text-muted-foreground">

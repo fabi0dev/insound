@@ -32,7 +32,10 @@ function NavLink({
           : "text-muted-foreground hover:bg-accent/60 hover:text-foreground hover:translate-x-0.5",
       )}
     >
-      <Icon className="size-4 transition-transform duration-200" weight={active ? "fill" : "regular"} />
+      <Icon
+        className="size-4 transition-transform duration-200"
+        weight={active ? "fill" : "regular"}
+      />
       <span>{label}</span>
     </Link>
   );
@@ -51,16 +54,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-border bg-card/50 px-5 py-6 md:flex">
-        <div className="mb-6 flex items-center gap-2">
+        <Link
+          href="/"
+          aria-label="Voltar para a página inicial"
+          className="mb-6 flex items-center gap-2 rounded-xl px-1 py-0.5 transition-colors duration-200 hover:bg-primary/10 cursor-pointer"
+        >
           <div className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <MusicNotesPlus weight="fill" className="size-5" />
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-semibold tracking-tight">
-              Insound
+              InSound
             </span>
           </div>
-        </div>
+        </Link>
 
         <nav className="space-y-1 text-sm">
           {mainNav.map((item) => (
@@ -85,13 +92,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             />
           ))}
         </nav>
-
-        <div className="mt-auto rounded-xl border border-primary/30 bg-primary/10 p-3 text-[11px] text-muted-foreground">
-          <p className="font-medium text-foreground">Modo preview</p>
-          <p className="mt-1">
-            As músicas tocam apenas 30 segundos usando a API pública da Deezer.
-          </p>
-        </div>
       </aside>
       <div className="flex min-h-screen flex-1 flex-col md:pl-64">
         <main className="relative flex flex-1 flex-col">
