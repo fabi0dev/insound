@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { MagnifyingGlass, Play, Plus, Heart } from "@phosphor-icons/react";
 import type {
@@ -59,7 +59,7 @@ export function SearchClient() {
       setHasUserSearched(true);
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : "Não foi possível realizar a busca."
+        e instanceof Error ? e.message : "Não foi possível realizar a busca.",
       );
     } finally {
       setLoading(false);
@@ -164,16 +164,16 @@ export function SearchClient() {
               </h2>
               <div className="rounded-lg border border-border bg-card/40 p-1.5">
                 <div className="grid gap-0.5 sm:grid-cols-2">
-                    {popularTracks.map((track) => {
-                      const isCurrent = current?.id === track.id;
-                      const cover =
-                        track.album?.cover_medium ?? track.album?.cover_big;
-                      return (
+                  {popularTracks.map((track) => {
+                    const isCurrent = current?.id === track.id;
+                    const cover =
+                      track.album?.cover_medium ?? track.album?.cover_big;
+                    return (
                       <div
                         key={track.id}
                         className={cn(
                           "group flex items-center gap-3 rounded-lg px-2 py-1.5 cursor-pointer transition-colors duration-200 hover:bg-primary/10",
-                          isCurrent && "bg-primary/10"
+                          isCurrent && "bg-primary/10",
                         )}
                       >
                         <Button
@@ -186,13 +186,13 @@ export function SearchClient() {
                           <Play weight="fill" className="size-4" />
                         </Button>
                         {cover ? (
-                      <div className="size-10 shrink-0 overflow-hidden rounded-md">
-                        <img
-                          src={cover}
-                          alt={track.title}
-                          className="size-full object-cover"
-                        />
-                      </div>
+                          <div className="size-10 shrink-0 overflow-hidden rounded-md">
+                            <img
+                              src={cover}
+                              alt={track.title}
+                              className="size-full object-cover"
+                            />
+                          </div>
                         ) : (
                           <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
                             <Play weight="fill" className="size-4" />
@@ -227,14 +227,16 @@ export function SearchClient() {
                         >
                           <Heart
                             className="size-4"
-                            weight={isFavoriteTrack(track.id) ? "fill" : "regular"}
+                            weight={
+                              isFavoriteTrack(track.id) ? "fill" : "regular"
+                            }
                           />
                         </Button>
                         <div className="min-w-0 flex-1">
                           <p
                             className={cn(
                               "truncate text-sm text-foreground group-hover:text-primary",
-                              isCurrent && "text-primary"
+                              isCurrent && "text-primary",
                             )}
                           >
                             {track.title}
@@ -249,8 +251,8 @@ export function SearchClient() {
                           </p>
                         </div>
                       </div>
-                      );
-                    })}
+                    );
+                  })}
                 </div>
               </div>
             </section>
@@ -349,16 +351,28 @@ export function SearchClient() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
               <TabsList className="h-8 rounded-full border border-border bg-card/40 p-0.5 text-xs">
-                <TabsTrigger value="tracks" className="rounded-full px-3 py-1.5">
+                <TabsTrigger
+                  value="tracks"
+                  className="rounded-full px-3 py-1.5"
+                >
                   Músicas
                 </TabsTrigger>
-                <TabsTrigger value="artists" className="rounded-full px-3 py-1.5">
+                <TabsTrigger
+                  value="artists"
+                  className="rounded-full px-3 py-1.5"
+                >
                   Artistas
                 </TabsTrigger>
-                <TabsTrigger value="albums" className="rounded-full px-3 py-1.5">
+                <TabsTrigger
+                  value="albums"
+                  className="rounded-full px-3 py-1.5"
+                >
                   Álbuns
                 </TabsTrigger>
-                <TabsTrigger value="playlists" className="rounded-full px-3 py-1.5">
+                <TabsTrigger
+                  value="playlists"
+                  className="rounded-full px-3 py-1.5"
+                >
                   Playlists
                 </TabsTrigger>
               </TabsList>
@@ -372,105 +386,105 @@ export function SearchClient() {
             <CardContent className="p-0">
               {tab === "tracks" && (
                 <div className="space-y-1">
-              {results.tracks.map((track, i) => {
-                const cover =
-                  track.album?.cover_medium ?? track.album?.cover_big;
-                const isCurrent = current?.id === track.id;
-                return (
-                    <div
-                      key={track.id}
-                      className={cn(
-                        "group flex w-full items-center gap-3 rounded-lg px-2 py-1.5 cursor-pointer transition-colors duration-200 hover:bg-primary/10",
-                        isCurrent && "bg-primary/10"
-                      )}
-                    >
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="size-8 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground"
-                        onClick={() =>
-                          setQueue(
-                            results.tracks.filter((t) => t.preview),
-                            i
-                          )
-                        }
+                  {results.tracks.map((track, i) => {
+                    const cover =
+                      track.album?.cover_medium ?? track.album?.cover_big;
+                    const isCurrent = current?.id === track.id;
+                    return (
+                      <div
+                        key={track.id}
+                        className={cn(
+                          "group flex w-full items-center gap-3 rounded-lg px-2 py-1.5 cursor-pointer transition-colors duration-200 hover:bg-primary/10",
+                          isCurrent && "bg-primary/10",
+                        )}
                       >
-                        <Play weight="fill" className="size-4" />
-                      </Button>
-                      {cover ? (
-                        <div className="size-10 shrink-0 overflow-hidden rounded-md">
-                          <img
-                            src={cover}
-                            alt={track.title}
-                            className="size-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                          <Play weight="fill" className="size-4" />
-                        </div>
-                      )}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={() => addToQueue(track)}
-                        title="Adicionar à fila"
-                      >
-                        <Plus className="size-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        onClick={() => toggleTrack(track)}
-                        title={
-                          isFavoriteTrack(track.id)
-                            ? "Remover dos favoritos"
-                            : "Favoritar"
-                        }
-                        className="text-muted-foreground hover:text-destructive"
-                      >
-                        <Heart
-                          className="size-4"
-                          weight={
-                            isFavoriteTrack(track.id) ? "fill" : "regular"
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground"
+                          onClick={() =>
+                            setQueue(
+                              results.tracks.filter((t) => t.preview),
+                              i,
+                            )
                           }
-                        />
-                      </Button>
-                      <div className="min-w-0 flex-1">
-                        <p
-                          className={cn(
-                            "truncate text-sm text-foreground group-hover:text-primary",
-                            isCurrent && "text-primary",
-                          )}
                         >
-                          {track.title}
-                        </p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          <Link
-                            href={`/artist/${track.artist.id}`}
-                            className="hover:text-primary underline-offset-2 hover:underline"
+                          <Play weight="fill" className="size-4" />
+                        </Button>
+                        {cover ? (
+                          <div className="size-10 shrink-0 overflow-hidden rounded-md">
+                            <img
+                              src={cover}
+                              alt={track.title}
+                              className="size-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                            <Play weight="fill" className="size-4" />
+                          </div>
+                        )}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={() => addToQueue(track)}
+                          title="Adicionar à fila"
+                        >
+                          <Plus className="size-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={() => toggleTrack(track)}
+                          title={
+                            isFavoriteTrack(track.id)
+                              ? "Remover dos favoritos"
+                              : "Favoritar"
+                          }
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <Heart
+                            className="size-4"
+                            weight={
+                              isFavoriteTrack(track.id) ? "fill" : "regular"
+                            }
+                          />
+                        </Button>
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className={cn(
+                              "truncate text-sm text-foreground group-hover:text-primary",
+                              isCurrent && "text-primary",
+                            )}
                           >
-                            {track.artist.name}
-                          </Link>
-                          {" · "}
-                          <Link
-                            href={`/album/${track.album.id}`}
-                            className="hover:text-primary underline-offset-2 hover:underline"
-                          >
-                            {track.album.title}
-                          </Link>
-                        </p>
+                            {track.title}
+                          </p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            <Link
+                              href={`/artist/${track.artist.id}`}
+                              className="hover:text-primary underline-offset-2 hover:underline"
+                            >
+                              {track.artist.name}
+                            </Link>
+                            {" · "}
+                            <Link
+                              href={`/album/${track.album.id}`}
+                              className="hover:text-primary underline-offset-2 hover:underline"
+                            >
+                              {track.album.title}
+                            </Link>
+                          </p>
+                        </div>
+                        <span className="text-[11px] text-muted-foreground">
+                          {Math.round(track.duration / 60)}:
+                          {(track.duration % 60).toString().padStart(2, "0")}
+                        </span>
                       </div>
-                      <span className="text-[11px] text-muted-foreground">
-                        {Math.round(track.duration / 60)}:
-                        {(track.duration % 60).toString().padStart(2, "0")}
-                      </span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 </div>
               )}
 
